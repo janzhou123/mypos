@@ -10,15 +10,15 @@
                             <el-table-column prop="price" label="金额" width="70"></el-table-column>
                             <el-table-column label="操作" width="100" fixed="right">
                                 <template scope="scope">
-                                    <el-button type="text" size="small">删除</el-button>
+                                    <el-button type="text" size="small" @click="delSingleGoods(scope.row)">删除</el-button>
                                     <el-button type="text" size="small" @click="addOrderList(scope.row)">增加</el-button>
                                 </template>
                             </el-table-column>
                         </el-table>
                         <div class="div-btn">
                             <el-button type="warning">挂单</el-button>
-                            <el-button type="danger">删除</el-button>
-                            <el-button type="success">结账</el-button>
+                            <el-button type="danger" @click="delAllGoods()">删除</el-button>
+                            <el-button type="success" @click="checkOut">结账</el-button>
                         </div>
                     </el-tab-pane>
                     <el-tab-pane label="挂单">
@@ -111,12 +111,7 @@ export default {
             type2Goods: [],
             type3Goods: [],
             oftenGoods: [],
-            tableData: [{
-
-                goodsName: '可口可乐',
-                price: 8,
-                count: 1
-            }],
+            tableData: [],
         }
     },
     created: function() {
@@ -179,6 +174,34 @@ export default {
                 this.tableData.push(goodsNew);
             }
 
+        },
+        delSingleGoods(goods){
+            let arr = this.tableData.filter(o =>o.goodsId == goods.goodsId);
+            if (arr[0].count - 1 == 0) {
+                this.tableData = this.tableData.filter(o =>o.goodsId != goods.goodsId);
+            }else{
+                let arroff = this.oftenGoods.filter(o =>o.goodsId == goods.goodsId);
+                arr[0].count = arr[0].count - 1                
+                arr[0].price = arr[0].price - arroff[0].price;
+            }
+        },
+        delAllGoods(){
+            this.tableData=[];
+        },
+        checkOut(){
+            if (this.tableData) {
+                this.tableData=[];
+                this.$message({
+                    message:'结账成功',
+                    type:'success',
+                });
+            }else{
+                
+                this.$message({
+                    message:'不能结账',
+                    type:'error',
+                });
+            }
         }
     }
 }
