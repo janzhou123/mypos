@@ -6,12 +6,12 @@
                     <el-tab-pane label="点餐">
                         <el-table :data="tableData" border show-summary style="width: 100%">
                             <el-table-column prop="goodsName" label="商品名称"></el-table-column>
-                            <el-table-column prop="count" label="数量" width="50"></el-table-column>
+                            <el-table-column prop="count" label="数量" width="70"></el-table-column>
                             <el-table-column prop="price" label="金额" width="70"></el-table-column>
                             <el-table-column label="操作" width="100" fixed="right">
                                 <template scope="scope">
                                     <el-button type="text" size="small">删除</el-button>
-                                    <el-button type="text" size="small">增加</el-button>
+                                    <el-button type="text" size="small" @click="addOrderList(scope.row)">增加</el-button>
                                 </template>
                             </el-table-column>
                         </el-table>
@@ -34,7 +34,7 @@
                     <div class="title">常用商品</div>
                     <div class="often-goods-list">
                         <ul>
-                            <li v-for="goods in oftenGoods">
+                            <li v-for="goods in oftenGoods" @click="addOrderList(goods)">
                                 <span>{{goods.goodsName}}</span>
                                 <span class="o-price">￥{{goods.price}}元</span>
                             </li>
@@ -46,7 +46,7 @@
                         <el-tab-pane label="汉堡">
                             <div>
                                 <ul class='cookList'>
-                                    <li v-for="goods in type0Goods">
+                                    <li v-for="goods in type0Goods" @click="addOrderList(goods)">
                                         <span class="foodImg"><img :src="goods.goodsImg" width="100%"></span>
                                         <span class="foodName">{{goods.goodsName}}</span>
                                         <span class="foodPrice">￥{{goods.price}}元</span>
@@ -56,10 +56,10 @@
 
                         </el-tab-pane>
                         <el-tab-pane label="小食">
-                            
+
                             <div>
                                 <ul class='cookList'>
-                                    <li v-for="goods in type1Goods">
+                                    <li v-for="goods in type1Goods" @click="addOrderList(goods)">
                                         <span class="foodImg"><img :src="goods.goodsImg" width="100%"></span>
                                         <span class="foodName">{{goods.goodsName}}</span>
                                         <span class="foodPrice">￥{{goods.price}}元</span>
@@ -68,10 +68,10 @@
                             </div>
                         </el-tab-pane>
                         <el-tab-pane label="饮料">
-                            
+
                             <div>
                                 <ul class='cookList'>
-                                    <li v-for="goods in type2Goods">
+                                    <li v-for="goods in type2Goods" @click="addOrderList(goods)">
                                         <span class="foodImg"><img :src="goods.goodsImg" width="100%"></span>
                                         <span class="foodName">{{goods.goodsName}}</span>
                                         <span class="foodPrice">￥{{goods.price}}元</span>
@@ -82,14 +82,14 @@
                         <el-tab-pane label="套餐">
                             <div>
                                 <ul class='cookList'>
-                                    <li v-for="goods in type3Goods">
+                                    <li v-for="goods in type3Goods" @click="addOrderList(goods)">
                                         <span class="foodImg"><img :src="goods.goodsImg" width="100%"></span>
                                         <span class="foodName">{{goods.goodsName}}</span>
                                         <span class="foodPrice">￥{{goods.price}}元</span>
                                     </li>
                                 </ul>
                             </div>
-                            </el-tab-pane>
+                        </el-tab-pane>
                     </el-tabs>
 
                 </div>
@@ -116,47 +116,32 @@ export default {
                 goodsName: '可口可乐',
                 price: 8,
                 count: 1
-            }, {
-
-                goodsName: '香辣鸡腿堡',
-                price: 15,
-                count: 1
-            }, {
-
-                goodsName: '爱心薯条',
-                price: 8,
-                count: 1
-            }, {
-
-                goodsName: '甜筒',
-                price: 8,
-                count: 1
-            }]
+            }],
         }
     },
     created: function() {
         axios.get('http://jspang.com/DemoApi/oftenGoods.php')
-        .then(response=>{
-            this.oftenGoods = response.data;
-        })
-        .catch(error=>{
-            // console.log(error);
-            alert('网络错误');
-        })
+            .then(response => {
+                this.oftenGoods = response.data;
+            })
+            .catch(error => {
+                // console.log(error);
+                alert('网络错误');
+            })
 
-        
+
         axios.get('http://jspang.com/DemoApi/typeGoods.php')
-        .then(response=>{
-            this.type0Goods = response.data[0];
-            this.type1Goods = response.data[1];
-            this.type2Goods = response.data[2];
-            this.type3Goods = response.data[3];
-            // console.log(response)
-        })
-        .catch(error=>{
-            // console.log(error);
-            alert('网络错误');
-        })
+            .then(response => {
+                this.type0Goods = response.data[0];
+                this.type1Goods = response.data[1];
+                this.type2Goods = response.data[2];
+                this.type3Goods = response.data[3];
+                // console.log(response)
+            })
+            .catch(error => {
+                // console.log(error);
+                alert('网络错误');
+            })
 
 
     },
@@ -164,6 +149,37 @@ export default {
         var orderHeight = document.body.clientHeight;
         document.getElementById('order_list').style.height = orderHeight + "px";
 
+    },
+    methods: {
+        addOrderList(goods) {
+            //商品是否存在于列表里面
+            let isHave = false;
+            for (var index = 0; index < this.tableData.length; index++) {
+                if (this.tableData[index].goodsId == goods.goodsId) {
+                    isHave = true;
+                }
+
+            }
+            if (isHave) {
+                // let arr = this.tableData.filter(function(params, index, array) {
+                //     if (params.goodsId == goods.goodsId) {
+                //         console.log(params);
+                //         console.log(index);
+                //         console.log(array);
+                //         return true;
+                //     }
+                //     return false;
+                // });
+                let arr = this.tableData.filter(o =>o.goodsId == goods.goodsId);
+                let arroff = this.oftenGoods.filter(o =>o.goodsId == goods.goodsId);
+                arr[0].count++;
+                arr[0].price = arr[0].price + arroff[0].price;
+            } else {
+                let goodsNew = { goodsId: goods.goodsId, goodsName: goods.goodsName, price: goods.price, count: 1 };
+                this.tableData.push(goodsNew);
+            }
+
+        }
     }
 }
 </script>
@@ -193,6 +209,7 @@ export default {
     padding: 10px;
     margin: 5px;
     background-color: #fff;
+    cursor: pointer;
 }
 
 .o-price {
@@ -213,6 +230,7 @@ export default {
     padding: 2px;
     float: left;
     margin: 2px;
+    cursor: pointer;
 }
 
 .cookList li span {
@@ -226,7 +244,7 @@ export default {
 }
 
 .foodName {
-    font-size: 18px;
+    font-size: 16px;
     padding-left: 10px;
     color: brown;
 }
